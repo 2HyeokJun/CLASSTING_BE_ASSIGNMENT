@@ -84,7 +84,6 @@ const delete_newsfeed = async (req, res) => {
 }
 
 exports.publish_token = publish_token;
-exports.return_hello  = return_hello;
 exports.enroll_school = enroll_school;
 exports.write_newsfeed = write_newsfeed;
 exports.update_newsfeed = update_newsfeed;
