@@ -9,7 +9,20 @@ const check_token = async (req, res, next) => {
     }
     let access_token =  fn.get_token(req.headers.authorization);
     let access_token_info = fn.get_role_from_token(access_token);
-    let now = new Date().getTime() / 1000;
+
+    if (access_token_info === 'jwt expired') {
+        return res.status(401).json({
+            status: 'Unauthorized',
+            message: 'token is expired',
+        });
+    }
+    
+    if (access_token_info === 'invalid token') {
+        return res.status(400).json({
+            status: 'Bad Request',
+            message: 'invalid token',
+        });
+    }
 
     if (access_token_info.role !== 'student') {
         return res.status(401).json({
@@ -17,13 +30,7 @@ const check_token = async (req, res, next) => {
             message: 'token has wrong role',
         });
     }
-    if (access_token_info.exp < now) {
-        return res.status(401).json({
-            status: 'Unauthorized',
-            message: 'token is expired',
-        });
-    }
-    
+
     next();
 }
 

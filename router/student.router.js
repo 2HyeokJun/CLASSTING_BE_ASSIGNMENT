@@ -5,6 +5,6 @@ const studentMiddleware = require('../middleware/student.middleware');
 const studentRouter = express.Router();
 
 studentRouter.post('/token', studentController.publish_token);
-studentRouter.get('/', studentMiddleware.check_token, studentController.return_hello);
+studentRouter.use(studentMiddleware.check_token);
 
 module.exports = studentRouter;

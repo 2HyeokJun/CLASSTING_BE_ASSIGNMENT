@@ -21,7 +21,7 @@ const get_role_from_token = (token) => {
         return decode_result;
     }
     catch (error) {
-        return error;
+        return error.message;
     }
 }
 
