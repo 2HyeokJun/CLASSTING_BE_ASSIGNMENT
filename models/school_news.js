@@ -1,6 +1,7 @@
+
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('school_newsfeed', {
-    newsfeed_id: {
+  return sequelize.define('school_news', {
+    news_id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -8,19 +9,19 @@ module.exports = function(sequelize, DataTypes) {
     },
     school_id: {
       type: DataTypes.INTEGER,
+      references: {
+        model: 'school_list',
+        key: 'school_id',
+      },
       allowNull: false
     },
-    newsfeed_content: {
+    news_content: {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    // created_at: {
-    //   type: DataTypes.DATE,
-    //   allowNull: false,
-    // }
   }, {
     sequelize,
-    tableName: 'school_newsfeed',
+    tableName: 'school_news',
     timestamps: true,
     underscored: true,
     indexes: [
@@ -29,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "newsfeed_id" },
+          { name: "news_id" },
         ]
       },
     ],

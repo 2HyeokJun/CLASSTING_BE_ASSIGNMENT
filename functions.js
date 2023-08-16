@@ -1,9 +1,13 @@
 const jwt = require('jsonwebtoken');
 
-const publish_token = (role) => {
+const publish_token = (role, student_id = 0) => {
     let user_info = {
         role: role,
     };
+    if (role === 'student') {
+        user_info.student_id = student_id;
+    }
+
     let secret_key = process.env.JWT_SECRET_KEY;
 
     let token = jwt.sign(user_info, secret_key, {expiresIn: '1d'});
@@ -14,17 +18,15 @@ const get_token = (headers) => {
     return headers.split('Bearer ')[1];
 }
 
-const get_role_from_token = (token) => {
-    let secret_key = process.env.JWT_SECRET_KEY;
+const get_token_info = (token) => {
     try {
-        let decode_result = jwt.verify(token, secret_key);
-        return decode_result;
+        return jwt.verify(token, process.env.JWT_SECRET_KEY);
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error.message;
-    }
+    
 }
 
 exports.publish_token = publish_token;
 exports.get_token       = get_token;
-exports.get_role_from_token = get_role_from_token;
+exports.get_token_info = get_token_info;

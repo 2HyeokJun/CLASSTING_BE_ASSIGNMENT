@@ -5,6 +5,7 @@ const check_request_body = async (error, req, res, next) => {
             message: 'Wrong JSON format'
         })
     }
+    console.log('no syntax error')
     next();
 };
 

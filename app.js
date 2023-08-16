@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const adminRouter = require('./router/admin.router');
 const studentRouter = require('./router/student.router');
 const sequelize = require('./models');
@@ -29,8 +28,6 @@ class App {
     setMiddleWare() {
         this.app.use(express.json()); 
         this.app.use(express.urlencoded({ extended : true})); 
-        this.app.use(bodyParser);
-        this.app.use(appMiddleware.check_request_body);
     }
 
     getRouting() {

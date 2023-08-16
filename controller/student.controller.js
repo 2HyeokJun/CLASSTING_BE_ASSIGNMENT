@@ -2,14 +2,15 @@ const fn = require('../functions');
 const db = require('../models/index');
 
 const publish_token = async (req, res) => {
-    let token = fn.publish_token('student');
+    let student_id = req.params.student_id;
+    let token = fn.publish_token('student', student_id);
     return res.status(200).json({
         access_token:token,
     });
 }
 
 const get_school_news_list = async (req, res) => {
-    let school_id = req.params.school_id;
+    let school_id = req.student_id;
     let newsfeed_list = await db.models.school_newsfeed.findAll({
         attributes: ['newsfeed_id', 'newsfeed_content', 'created_at', 'updated_at'],
 
@@ -29,7 +30,7 @@ const get_school_news_list = async (req, res) => {
 } 
 
 const get_subscription_list = async (req, res) => {
-    let student_id = req.query.student_id;
+    let student_id = req.student_id;
     let subscribed_school_list = await db.models.student_subscription_school.findAll({
         where: {
             student_id: student_id,
@@ -55,7 +56,8 @@ const get_subscription_list = async (req, res) => {
 
 
 const subscribe_school = async (req, res) => {
-    let {student_id, school_id} = req.body;
+    let student_id = req.student_id;
+    let school_id = req.body.school_id;
     try {
         db.models.student_subscription_school.create({
             student_id: student_id,
@@ -73,7 +75,8 @@ const subscribe_school = async (req, res) => {
 }
 
 const unsubscribe_school = async (req, res) => {
-    let {student_id, school_id} = req.body;
+    let student_id = req.student_id;
+    let school_id = req.body.school_id;
     try {
         db.models.student_subscription_school.update({
             is_subscribed: false,
@@ -95,7 +98,7 @@ const unsubscribe_school = async (req, res) => {
 }
 
 const get_newsfeed_list = async (req, res) => {
-    let student_id = req.query.student_id;
+    let student_id = req.student_id;
     let my_newsfeed_list = await db.models.student_receives_newsfeed.findAll({
         where: {
             student_id: student_id,

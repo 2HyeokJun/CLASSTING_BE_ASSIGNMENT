@@ -8,7 +8,7 @@ const check_token = async (req, res, next) => {
         });
     }
     let access_token =  fn.get_token(req.headers.authorization);
-    let access_token_info = fn.get_role_from_token(access_token);
+    let access_token_info = fn.get_token_info(access_token);
 
     if (access_token_info === 'jwt expired') {
         return res.status(401).json({
@@ -30,6 +30,8 @@ const check_token = async (req, res, next) => {
             message: 'token has wrong role',
         });
     }
+
+    req.student_id = access_token_info.student_id;
 
     next();
 }
