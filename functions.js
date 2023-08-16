@@ -6,7 +6,7 @@ const publish_token = (role) => {
     };
     let secret_key = process.env.JWT_SECRET_KEY;
 
-    let token = jwt.sign(user_info, secret_key, {expiresIn: '1h'});
+    let token = jwt.sign(user_info, secret_key, {expiresIn: '1d'});
     return token;
 }
 

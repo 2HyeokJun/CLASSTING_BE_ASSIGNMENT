@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define('student_subscription_school', {
     student_id: {
       type: DataTypes.INTEGER,
@@ -11,14 +11,15 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    subscribed_at: {
-      type: DataTypes.DATE,
-      allowNull: true
-    }
+    is_subscribed: {
+      type: DataTypes.BOOLEAN,
+    },
   }, {
     sequelize,
     tableName: 'student_subscription_school',
-    timestamps: false,
+    timestamps: true,
+    createdAt: false,
+    underscored: true,
     indexes: [
       {
         name: "PRIMARY",

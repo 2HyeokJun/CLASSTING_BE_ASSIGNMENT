@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('school_newsfeed', {
     newsfeed_id: {
@@ -15,10 +14,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    }
+    // created_at: {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    // }
   }, {
     sequelize,
     tableName: 'school_newsfeed',

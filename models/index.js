@@ -9,10 +9,15 @@ const config = require('../config/config.js')[env]
 const db = {};
 
 // new Sequelize를 통해 MySQL 연결 객체를 생성한다.
-const sequelize = new Sequelize(config.database, config.username, config.password, config)
+const sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+
 
 // 연결객체를 나중에 재사용하기 위해 db.sequelize에 넣어둔다.
 db.sequelize = init_models(sequelize);
+db.sequelize.school_newsfeed.belongsTo(db.sequelize.school_list, { foreignKey: 'school_id', targetKey: 'school_id' });
+db.sequelize.student_subscription_school.belongsTo(db.sequelize.school_list, { foreignKey: 'school_id', targetKey: 'school_id' });
+db.sequelize.student_receives_newsfeed.belongsTo(db.sequelize.school_newsfeed, {foreignKey: 'newsfeed_id', targetKey: 'newsfeed_id'});
 
 // 모듈로 꺼낸다.
 module.exports = db;
