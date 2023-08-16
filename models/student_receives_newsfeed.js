@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
       newsfeed_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        references: {
+          model: 'school_news',
+          key: 'newsfeed_id',
+        },
       },
     }, {
       sequelize,

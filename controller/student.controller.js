@@ -2,7 +2,7 @@ const fn = require('../functions');
 const db = require('../models/index');
 
 const publish_token = async (req, res) => {
-    let student_id = req.params.student_id;
+    let student_id = req.params.student_id ? req.params.student_id : 1;
     let token = fn.publish_token('student', student_id);
     return res.status(200).json({
         access_token:token,
@@ -10,10 +10,9 @@ const publish_token = async (req, res) => {
 }
 
 const get_school_news_list = async (req, res) => {
-    let school_id = req.student_id;
-    let newsfeed_list = await db.models.school_newsfeed.findAll({
-        attributes: ['newsfeed_id', 'newsfeed_content', 'created_at', 'updated_at'],
-
+    let school_id = req.params.school_id;
+    let news_list = await db.models.school_news.findAll({
+        attributes: ['news_id', 'created_at', 'updated_at'],
         where: {
             school_id: school_id,
         },
@@ -24,9 +23,8 @@ const get_school_news_list = async (req, res) => {
 
     res.status(200).json({
         status: 'success',
-        newsfeed_list: newsfeed_list,
+        news_list: news_list,
     });
-
 } 
 
 const get_subscription_list = async (req, res) => {
@@ -54,31 +52,43 @@ const get_subscription_list = async (req, res) => {
     });
 }
 
-
 const subscribe_school = async (req, res) => {
     let student_id = req.student_id;
     let school_id = req.body.school_id;
     try {
-        db.models.student_subscription_school.create({
+        let create_result = await db.models.student_subscription_school.create({
             student_id: student_id,
             school_id: school_id,
             is_subscribed: true,
-        }).then (result => console.log('result:', result))
+        });
+        if (create_result) {
+            return res.status(200).json({
+                status: 'success',
+                message: 'subscribe succeed',
+            });
+        }
     } catch (error) {
-        console.error(error);
-    }
+        let error_type = error.errors[0].type;
+        let error_message = error.errors[0].message;
+        if (error_type === 'unique violation' && error_message === 'PRIMARY must be unique') {
+            return res.status(400).json({
+                status: 'Bad Request',
+                message: 'You already subscribed that school',
+            })
+        }
 
-    res.status(200).json({
-        status: 'success',
-        message: 'subscribe succeed',
-    });
+        return res.status(500).json({
+            error: 'InternalServerError',
+            message: 'Server Error occured',
+        })
+    }
 }
 
 const unsubscribe_school = async (req, res) => {
     let student_id = req.student_id;
-    let school_id = req.body.school_id;
+    let school_id = req.params.school_id;
     try {
-        db.models.student_subscription_school.update({
+        await db.models.student_subscription_school.update({
             is_subscribed: false,
         },
         {
@@ -86,17 +96,23 @@ const unsubscribe_school = async (req, res) => {
                 student_id: student_id,
                 school_id: school_id,
             }
-        }).then (result => console.log('result:', result))
+        });
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'unsubscribe succeed',
+        });
+        
     } catch (error) {
         console.error(error);
+        return res.status(500).json({
+            error: 'InternalServerError',
+            message: 'Server Error occured',
+        })
     }
-
-    res.status(200).json({
-        status: 'success',
-        message: 'unsubscribe succeed',
-    });
 }
 
+// TODO:
 const get_newsfeed_list = async (req, res) => {
     let student_id = req.student_id;
     let my_newsfeed_list = await db.models.student_receives_newsfeed.findAll({
@@ -112,6 +128,7 @@ const get_newsfeed_list = async (req, res) => {
             [db.models.school_newsfeed, 'updated_at', 'DESC']
         ]
     });
+    console.log(my_newsfeed_list)
 
     my_newsfeed_list = JSON.parse(JSON.stringify(my_newsfeed_list));
     for (element of my_newsfeed_list) {

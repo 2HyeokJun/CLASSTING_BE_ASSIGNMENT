@@ -63,7 +63,7 @@ const write_school_news = async (req, res) => {
         }
         console.error(error)
 
-        res.status(500).json({
+        return res.status(500).json({
             error: 'InternalServerError',
             message: 'Server Error occured',
         })
@@ -92,7 +92,7 @@ const update_school_news = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({
+        return res.status(500).json({
             error: 'InternalServerError',
             message: 'Server Error occured',
         })
@@ -107,22 +107,23 @@ const delete_school_news = async (req, res) => {
                 news_id: news_id,
             }
         });
-        if (destroy_result) {
-            return res.status(200).json({
-                status: 'success',
-                message: 'delete news succeed',
-            });
-        }
-        else {
-            res.status(401).json({
+        
+        if (!destroy_result) {
+            return res.status(401).json({
                 status: 'InvalidParamError',
                 message: 'wrong news_id',
             });
+            
         }
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'delete news succeed',
+        });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({
+        return res.status(500).json({
             error: 'InternalServerError',
             message: 'Server Error occured',
         })

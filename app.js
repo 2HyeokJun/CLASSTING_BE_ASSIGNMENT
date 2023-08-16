@@ -2,7 +2,6 @@ const express = require('express');
 const adminRouter = require('./router/admin.router');
 const studentRouter = require('./router/student.router');
 const sequelize = require('./models');
-const appMiddleware = require('./middleware/app.middleware');
 
 class App {
     constructor() {
