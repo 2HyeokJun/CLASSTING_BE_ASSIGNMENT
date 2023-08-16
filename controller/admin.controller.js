@@ -10,14 +10,12 @@ const publish_token = async (req, res) => {
 
 const enroll_school = async (req, res) => {
     let {school_region, school_name} = req.body;
-    try {
-        db.models.school_list.create({
+    let enroll_school_result = await db.models.school_list.create({
             school_region: school_region,
             school_name: school_name,
-        }).then (result => console.log('result:', result))
-    } catch (error) {
-        console.error(error);
-    }
+    });
+    console.log(enroll_school_result);
+    
     
     res.status(200).json({
         status: 'success',

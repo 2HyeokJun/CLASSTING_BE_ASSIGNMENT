@@ -35,4 +35,22 @@ const check_token = async (req, res, next) => {
     next();
 }
 
+const check_enroll_school = async (req, res, next) => {
+    let {school_region, school_name} = req.body;
+    if (!school_region) {
+        return res.status(400).json({
+            status: 'Bad Request',
+            message: 'school_region required',
+        })
+    };
+
+    if (!school_name) {
+        return res.status(400).json({
+            status: 'Bad Request',
+            message: 'school_name required',
+        })
+    }
+}
+
 exports.check_token = check_token;
+exports.check_enroll_school = check_enroll_school;
