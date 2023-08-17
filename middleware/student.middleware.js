@@ -113,7 +113,6 @@ const check_subscription_history = async (req, res, next) => {
         subscription_checker.before_subscribed = true;
         subscription_checker.now_subscribes = subscription_history.dataValues.is_subscribed;
     }
-    console.log(subscription_history)
     req.subscription_history = subscription_checker;
 
     next();

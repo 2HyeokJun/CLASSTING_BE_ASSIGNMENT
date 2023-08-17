@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         ]
       },
     ],
+    primaryKey: true,
     charset: 'utf8',
     collate: 'utf8_general_ci'
   });

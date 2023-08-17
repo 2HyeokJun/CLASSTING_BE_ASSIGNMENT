@@ -55,7 +55,7 @@ const get_subscription_list = async (req, res) => {
 const subscribe_school = async (req, res) => {
     let {student_id, subscription_history} = req;
     let school_id = req.params.school_id;
-    let is_subscribed = req.body.is_subscribed;
+    let is_subscribed = req.method === 'POST' ? true : false;
     try {
         if (!subscription_history.before_subscribed) { // 구독 이력 없음
             await db.models.student_subscription_school.create({
@@ -83,7 +83,7 @@ const subscribe_school = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({
-            error: 'InternalServerError',
+            status: 'InternalServerError',
             message: 'Server Error occured',
         })
     }
@@ -116,13 +116,13 @@ const get_newsfeed_list = async (req, res) => {
     
         })
         res.status(200).json({
-            status: success,
+            status: 'success',
             newsfeed_list: my_newsfeed_list,
         });
     } catch (error) {
         console.error(error);
         return res.status(500).json({
-            error: 'InternalServerError',
+            status: 'InternalServerError',
             message: 'Server Error occured',
         })
 

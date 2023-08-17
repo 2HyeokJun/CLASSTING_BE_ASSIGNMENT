@@ -11,20 +11,46 @@ const publish_token = async (req, res) => {
 
 const enroll_school = async (req, res) => {
     let {school_region, school_name} = req.body;
-    let enroll_school_result = await db.models.school_list.create({
+    try {
+        let is_school_exists = await db.models.school_list.findOne({
+            attributes: ['school_id'],
+            where: {
+                school_region: school_region,
+                school_name: school_name,
+            },
+        });
+
+        if (is_school_exists) {
+            return res.status(400).json({
+                status: 'Bad Request',
+                message: 'School already exists',
+                school_id: is_school_exists.dataValues.school_id,
+            })
+        }
+
+        let enroll_school_result = await db.models.school_list.create({
             school_region: school_region,
             school_name: school_name,
-    });
-    
-    res.status(200).json({
-        status: 'success',
-        message: 'Enroll succeed',
-        school_id: enroll_school_result.dataValues.school_id,
-    });
+        });
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'enroll school succeed',
+            school_id: enroll_school_result.dataValues.school_id,
+        })
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: 'InternalServerError',
+            message: 'Server Error occured',
+        })
+    }
 }
 
 const write_school_news = async (req, res) => {
-    let {school_id, news_content} = req.body;
+    let school_id = req.params.school_id;
+    let news_content = req.body.news_content;
     let news_id;
     const transaction = await sequelize.transaction();
     try {
@@ -35,7 +61,6 @@ const write_school_news = async (req, res) => {
             transaction: transaction,
         });
         news_id = write_news_result.dataValues.news_id;
-        console.log('news_id:', news_id)
         // #2. student_subscription_school에서 해당 school_id를 구독중인 student_id 가져오기
         let subscribing_student_list = await db.models.student_subscription_school.findAll({
             attributes: ['student_id'],
@@ -49,7 +74,6 @@ const write_school_news = async (req, res) => {
             // #3. loop: student_receives_newsfeed에서 (student_id, newsfeed_id) insert
             for (element of subscribing_student_list) {
                 let student_id = element.dataValues.student_id;
-                console.log(`${student_id} => ${news_id}`)
                 await db.models.student_receives_newsfeed.create({
                     student_id: student_id,
                     news_id: news_id,
@@ -67,22 +91,21 @@ const write_school_news = async (req, res) => {
         await transaction.rollback();
         if (error.name === 'SequelizeForeignKeyConstraintError') { // school_list에 없는 school_id를 사용할 때
             return res.status(400).json({
-                error: 'InvalidParamError',
+                status: 'InvalidParamError',
                 message: 'invalid school_id'
             })
         }
         console.error(error)
-
         return res.status(500).json({
-            error: 'InternalServerError',
+            status: 'InternalServerError',
             message: 'Server Error occured',
         })
     }
 }
 
 const update_school_news = async (req, res) => {
-    let news_id = req.params.id;
-    let {school_id, news_content} = req.body;
+    let {school_id, news_id} = req.params;
+    let news_content = req.body.news_content;
 
     try {
         await db.models.school_news.update({
@@ -102,20 +125,30 @@ const update_school_news = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({
-            error: 'InternalServerError',
+            status: 'InternalServerError',
             message: 'Server Error occured',
         })
     }
 }
 
 const delete_school_news = async (req, res) => {
-    let news_id = req.params.id;
+    let news_id = req.params.news_id;
+    const transaction = await sequelize.transaction();
     try {
+        await db.models.student_receives_newsfeed.destroy({
+            where: {
+                news_id: news_id,
+            },
+            transaction: transaction,
+        });
+
         let destroy_result = await db.models.school_news.destroy({
             where: {
                 news_id: news_id,
-            }
+            },
+            transaction: transaction,
         });
+        await transaction.commit();
 
         if (!destroy_result) {
             return res.status(401).json({
@@ -131,9 +164,10 @@ const delete_school_news = async (req, res) => {
         });
 
     } catch (error) {
+        await transaction.rollback();
         console.error(error);
         return res.status(500).json({
-            error: 'InternalServerError',
+            status: 'InternalServerError',
             message: 'Server Error occured',
         })
     }

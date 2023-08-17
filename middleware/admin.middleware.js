@@ -3,7 +3,7 @@ const fn = require('../functions');
 const check_token = async (req, res, next) => {
     if (!req.headers.authorization) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'access_token missing',
         });
     }
@@ -12,14 +12,14 @@ const check_token = async (req, res, next) => {
 
     if (access_token_info.message === 'jwt expired') {
         return res.status(400).json({
-            error: 'UnauthorizedError',
+            status: 'UnauthorizedError',
             message: 'token expired',
         });
     }
 
     if (access_token_info.message === 'invalid token') {
         return res.status(400).json({
-            error: 'InvalidParamError',
+            status: 'InvalidParamError',
             message: 'invalid token',
         });
     }
@@ -38,14 +38,14 @@ const check_enroll_school = async (req, res, next) => {
     let {school_region, school_name} = req.body;
     if (!school_region) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'school_region missing',
         });
     };
 
     if (!school_name) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'school_name missing',
         });
     }
@@ -54,24 +54,25 @@ const check_enroll_school = async (req, res, next) => {
 }
 
 const check_write_school_news = async (req, res, next) => {
-    let {school_id, news_content} = req.body;
+    let school_id = req.params.school_id;
+    let news_content = req.body.news_content;
     if (!school_id) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'school_id missing',
         });
     };
 
     if (isNaN(Number(school_id))) {
         return res.status(400).json({
-            error: 'InvalidParamError',
+            status: 'InvalidParamError',
             message: 'school_id must be number',
         });
     }
 
     if (!news_content) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'news_content missing',
         });
     }
@@ -80,10 +81,10 @@ const check_write_school_news = async (req, res, next) => {
 }
 
 const check_update_school_news = async (req, res, next) => {
-    let news_id = req.params.id;
+    let news_id = req.params.news_id;
     if (!news_id) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'news_id missing',
         });
     }
@@ -91,21 +92,21 @@ const check_update_school_news = async (req, res, next) => {
     let {school_id, news_content} = req.body;
     if (!school_id) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'school_id missing',
         });
     }
 
     if (isNaN(Number(school_id))) {
         return res.status(400).json({
-            error: 'InvalidParamError',
+            status: 'InvalidParamError',
             message: 'school_id must be number',
         });
     }
 
     if (!news_content) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'news_content missing',
         });
     }
@@ -114,10 +115,10 @@ const check_update_school_news = async (req, res, next) => {
 }
 
 const check_delete_school_news = async (req, res, next) => {
-    let news_id = req.params.id;
+    let news_id = req.params.news_id;
     if (!news_id) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'news_id missing',
         });
     }
