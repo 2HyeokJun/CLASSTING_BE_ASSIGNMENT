@@ -12,15 +12,22 @@ const check_token = async (req, res, next) => {
 
     if (access_token_info.message === 'jwt expired') {
         return res.status(400).json({
-            error: 'InvalidParamError',
+            error: 'UnauthorizedError',
             message: 'token expired',
         });
     }
 
-    if (access_token_info.message === 'invalid token' || access_token_info.role !== 'admin') {
+    if (access_token_info.message === 'invalid token') {
         return res.status(400).json({
             error: 'InvalidParamError',
-            message: 'token invalid',
+            message: 'invalid token',
+        });
+    }
+
+    if (access_token_info.role !== 'admin') {
+        return res.status(401).json({
+            status: 'Unauthorized',
+            message: 'token has wrong role',
         });
     }
 

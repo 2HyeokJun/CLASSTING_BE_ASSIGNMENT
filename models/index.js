@@ -15,10 +15,10 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 
 // 연결객체를 나중에 재사용하기 위해 db.sequelize에 넣어둔다.
 db.sequelize = init_models(sequelize);
-db.sequelize.school_news.belongsTo(db.sequelize.school_list, { foreignKey: 'school_id', targetKey: 'school_id' });
+db.sequelize.school_news.belongsTo(db.sequelize.school_list);
 db.sequelize.student_subscription_school.belongsTo(db.sequelize.school_list, { foreignKey: 'school_id', targetKey: 'school_id' });
-// db.sequelize.school_news.hasMany(db.sequelize.student_receives_newsfeed, {foreignKey: 'newsfeed_id', targetKey: 'newsfeed_id'});
-// db.sequelize.student_receives_newsfeed.belongsTo(db.sequelize.school_news, {foreignKey: 'newsfeed_id', targetKey: 'newsfeed_id'});
+// db.sequelize.school_news.hasMany(db.sequelize.student_receives_newsfeed, {foreignKey: 'news_id', targetKey: 'news_id'});
+db.sequelize.student_receives_newsfeed.belongsTo(db.sequelize.school_news, {foreignKey: 'news_id', targetKey: 'news_id'});
 
 
 // 모듈로 꺼낸다.

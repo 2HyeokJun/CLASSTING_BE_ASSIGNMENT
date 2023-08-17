@@ -6,13 +6,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true
       },
-      newsfeed_id: {
+      news_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         references: {
           model: 'school_news',
-          key: 'newsfeed_id',
+          key: 'news_id',
         },
       },
     }, {
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
           using: "BTREE",
           fields: [
             { name: "student_id" },
-            { name: "newsfeed_id" },
+            { name: "news_id" },
           ]
         },
       ],

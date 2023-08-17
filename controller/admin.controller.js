@@ -1,4 +1,5 @@
 const fn = require('../functions');
+const sequelize = require('../models/index');
 const db = require('../models/index');
 
 const publish_token = async (req, res) => {
@@ -25,36 +26,45 @@ const enroll_school = async (req, res) => {
 const write_school_news = async (req, res) => {
     let {school_id, news_content} = req.body;
     let news_id;
+    const transaction = await sequelize.transaction();
     try {
         // #1. school_news에 insert
         let write_news_result = await db.models.school_news.create({
             school_id: school_id,
             news_content: news_content,
+            transaction: transaction,
         });
         news_id = write_news_result.dataValues.news_id;
+        console.log('news_id:', news_id)
         // #2. student_subscription_school에서 해당 school_id를 구독중인 student_id 가져오기
         let subscribing_student_list = await db.models.student_subscription_school.findAll({
             attributes: ['student_id'],
             where: {
                 school_id: school_id,
-            }
+                is_subscribed: true,
+            },
+            transaction: transaction,
         });
-        // #3. loop: student_receives_newsfeed에서 (student_id, newsfeed_id) insert
-        for (element of subscribing_student_list) {
-            let student_id = element.dataValues.student_id;
-            await db.models.student_receives_newsfeed.create({
-                student_id: student_id,
-                newsfeed_id: news_id,
-        })
-
+        if (subscribing_student_list.length) {
+            // #3. loop: student_receives_newsfeed에서 (student_id, newsfeed_id) insert
+            for (element of subscribing_student_list) {
+                let student_id = element.dataValues.student_id;
+                console.log(`${student_id} => ${news_id}`)
+                await db.models.student_receives_newsfeed.create({
+                    student_id: student_id,
+                    news_id: news_id,
+                    transaction: transaction,
+                })
+            }
+        }
+        await transaction.commit();
         return res.status(200).json({
             status: 'success',
             message: 'Write news succeed',
             news_id: news_id,
         });
-    }    
-
     } catch (error) {
+        await transaction.rollback();
         if (error.name === 'SequelizeForeignKeyConstraintError') { // school_list에 없는 school_id를 사용할 때
             return res.status(400).json({
                 error: 'InvalidParamError',
@@ -75,7 +85,7 @@ const update_school_news = async (req, res) => {
     let {school_id, news_content} = req.body;
 
     try {
-        let update_result = await db.models.school_news.update({
+        await db.models.school_news.update({
             school_id: school_id,
             news_content: news_content,
         },
@@ -84,12 +94,11 @@ const update_school_news = async (req, res) => {
                 news_id: news_id,
             }
         });
-        if (update_result && update_result[0]) { // update_result = [1] (성공)
-            res.status(200).json({
-                status: 'success',
-                message: 'update news succeed',
-            });
-        }
+        
+        return res.status(200).json({
+            status: 'success',
+            message: 'update news succeed',
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({
@@ -107,7 +116,7 @@ const delete_school_news = async (req, res) => {
                 news_id: news_id,
             }
         });
-        
+
         if (!destroy_result) {
             return res.status(401).json({
                 status: 'InvalidParamError',
