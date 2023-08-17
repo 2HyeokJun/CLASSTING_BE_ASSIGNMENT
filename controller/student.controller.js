@@ -91,29 +91,43 @@ const subscribe_school = async (req, res) => {
 
 const get_newsfeed_list = async (req, res) => {
     let student_id = req.student_id;
-    let my_newsfeed_list = await db.models.student_receives_newsfeed.findAll({
-        where: {
-            student_id: student_id,
-        },
-        attributes: ['news_id'],
-        include: [{
-            model: db.models.school_news,
-            attributes: ['news_content', 'created_at', 'updated_at'],
-        }],
-        order: [
-            [db.models.school_news, 'created_at', 'DESC']
-        ]
-    });
+    try {
+        let my_newsfeed_list = await db.models.student_receives_newsfeed.findAll({
+            where: {
+                student_id: student_id,
+            },
+            attributes: ['news_id'],
+            include: [{
+                model: db.models.school_news,
+                attributes: ['news_content', 'created_at', 'updated_at'],
+            }],
+            order: [
+                [db.models.school_news, 'created_at', 'DESC']
+            ]
+        });
+    
+        my_newsfeed_list = JSON.parse(JSON.stringify(my_newsfeed_list));
+        my_newsfeed_list.forEach((element, index) => {
+            element.newsfeed_id = my_newsfeed_list.length - index - 1;
+            element.news_content = element.school_new.news_content;
+            element.created_at = element.school_new.created_at;
+            element.updated_at = element.school_new.updated_at;
+            delete element.school_new;
+    
+        })
+        res.status(200).json({
+            status: success,
+            newsfeed_list: my_newsfeed_list,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            error: 'InternalServerError',
+            message: 'Server Error occured',
+        })
 
-    my_newsfeed_list = JSON.parse(JSON.stringify(my_newsfeed_list));
-    for (element of my_newsfeed_list) {
-        element.news_content = element.school_new.news_content;
-        element.created_at = element.school_new.created_at;
-        element.updated_at = element.school_new.updated_at;
-        delete element.school_new;
     }
-
-    res.status(200).json(my_newsfeed_list);
+    
 }
 
 
