@@ -88,7 +88,7 @@ const subscribe_school = async (req, res) => {
         console.error(error);
         return res.status(500).json({
             status: 'InternalServerError',
-            message: 'Server Error occured',
+            message: 'Server Error occurred',
         })
     }
 }
@@ -127,7 +127,7 @@ const get_newsfeed_list = async (req, res) => {
         console.error(error);
         return res.status(500).json({
             status: 'InternalServerError',
-            message: 'Server Error occured',
+            message: 'Server Error occurred',
         })
 
     }

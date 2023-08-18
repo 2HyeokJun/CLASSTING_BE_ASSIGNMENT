@@ -43,7 +43,7 @@ const enroll_school = async (req, res) => {
         console.error(error);
         return res.status(500).json({
             status: 'InternalServerError',
-            message: 'Server Error occured',
+            message: 'Server Error occurred',
         })
     }
 }
@@ -98,7 +98,7 @@ const write_school_news = async (req, res) => {
         console.error(error)
         return res.status(500).json({
             status: 'InternalServerError',
-            message: 'Server Error occured',
+            message: 'Server Error occurred',
         })
     }
 }
@@ -126,7 +126,7 @@ const update_school_news = async (req, res) => {
         console.error(error);
         return res.status(500).json({
             status: 'InternalServerError',
-            message: 'Server Error occured',
+            message: 'Server Error occurred',
         })
     }
 }
@@ -168,7 +168,7 @@ const delete_school_news = async (req, res) => {
         console.error(error);
         return res.status(500).json({
             status: 'InternalServerError',
-            message: 'Server Error occured',
+            message: 'Server Error occurred',
         })
     }
     
