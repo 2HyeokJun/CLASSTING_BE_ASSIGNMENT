@@ -42,9 +42,13 @@ const get_subscription_list = async (req, res) => {
     })
 
     let subscription_school_list = [];
-    for (element of subscribed_school_list) {
-        subscription_school_list.push(element.school_list.dataValues);
+    if (subscribed_school_list.length) {
+        for (element of subscribed_school_list) {
+            subscription_school_list.push(element.school_list.dataValues);
+        }
+
     }
+    
 
     res.status(200).json({
         status: 'success',

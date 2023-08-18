@@ -15,7 +15,13 @@ const publish_token = (role, student_id = 0) => {
 }
 
 const get_token = (headers) => {
-    return headers.split('Bearer ')[1];
+    if (headers.split('Bearer ').length > 1) {
+        return headers.split('Bearer ')[1];
+    }
+    else {
+        return null;
+    }
+    
 }
 
 const get_token_info = (token) => {
@@ -28,5 +34,5 @@ const get_token_info = (token) => {
 }
 
 exports.publish_token = publish_token;
-exports.get_token       = get_token;
+exports.get_token = get_token;
 exports.get_token_info = get_token_info;

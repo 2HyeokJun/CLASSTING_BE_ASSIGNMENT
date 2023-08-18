@@ -48,14 +48,14 @@ const check_get_school_news_list = async (req, res, next) => {
     let school_id = req.params.school_id;
     if (!school_id) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'school_id missing',
         });
     }
 
     if (isNaN(Number(school_id))) {
         return res.status(400).json({
-            error: 'InvalidParamError',
+            status: 'InvalidParamError',
             message: 'school_id must be number',
         });
     }
@@ -85,14 +85,14 @@ const check_subscription_history = async (req, res, next) => {
 
     if (!school_id) {
         return res.status(400).json({
-            error: 'MissingParamError',
+            status: 'MissingParamError',
             message: 'school_id missing',
         });
     }
 
     if (isNaN(Number(school_id))) {
         return res.status(400).json({
-            error: 'InvalidParamError',
+            status: 'InvalidParamError',
             message: 'school_id must be number',
         });
     }
